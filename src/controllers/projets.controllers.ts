@@ -31,6 +31,9 @@ const projetController = {
                     projet_id: id
                 },
             })
+               if(!Oneprojet){
+                  await res.status(HttpCode.NO_CONTENT).json({msg:"l'élément que vous recherchez n'existe pas "})
+               }
                 await res.status(HttpCode.OK).json(Oneprojet)
              
          } catch (error) {

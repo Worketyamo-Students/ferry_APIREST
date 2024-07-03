@@ -15,9 +15,141 @@ datasource db {
 
 model projets {
 
-projet_id  String  @id @default(auto()) @map("_id") @db.ObjectId
-title String@unique
-description String
-apprenants  String
+         projet_id   String  @id @default(auto()) @map("_id") @db.ObjectId
+         title       String@unique
+         description String
+//many to many avec apprenant
+         apprenantIDs String[]   @db.ObjectId
+         apprenants  Apprenants[] @relation(fields: [apprenantIDs], references: [apprenant_id])
 
 }
+
+model Apprenants {
+
+         apprenant_id  String  @id @default(auto()) @map("_id") @db.ObjectId
+//relation one to one avec user
+
+         user Users?
+
+//many to many avec projets
+         projetsIDs String[] @db.ObjectId
+         projets    projets[]   @relation(fields: [projetsIDs], references: [projet_id])
+
+//many to many avec quizzes
+         quizzeIDs String[] @db.ObjectId
+         quizzes    Quizzes[]   @relation(fields: [quizzeIDs], references: [quiz_id])
+
+//many to many avec cours
+         coursIDs String[] @db.ObjectId
+         cours    Cours[]   @relation(fields: [quizzeIDs], references: [course_id])
+
+//many to many avec exercice
+         exerciceIDs String[] @db.ObjectId
+         exercice    Exercices[]   @relation(fields: [exerciceIDs], references: [exercice_id])
+
+//many to many avec exercice
+        certificationIDs String[] @db.ObjectId
+        certification   Certification[]   @relation(fields: [certificationIDs], references: [certification_id])
+
+        Course        String?
+        user_id       String
+        exercices     String?
+        certifications String?
+
+}
+
+model Quizzes {
+
+        quiz_id         String  @id @default(auto()) @map("_id") @db.ObjectId
+
+//many to many avec apprenant
+        apprenantIDs String[]   @db.ObjectId
+        apprenants  Apprenants[] @relation(fields: [apprenantIDs], references: [apprenant_id])
+
+//many to many avec cours
+
+        coursIDs String[] @db.ObjectId
+        cours   Cours[]   @relation(fields: [coursIDs], references: [course_id])
+
+        questions       String
+        passing_scores  String
+        courses_id      String
+
+}
+model Cours {
+
+        course_id         String  @id @default(auto()) @map("_id") @db.ObjectId
+
+//many to many avec apprenant
+        apprenantIDs String[]   @db.ObjectId
+        apprenants  Apprenants[] @relation(fields: [apprenantIDs], references: [apprenant_id])
+
+//many to many avec quizze
+        quizzeIDs String[]   @db.ObjectId
+        quizze  Quizzes[] @relation(fields: [quizzeIDs], references: [quiz_id])
+
+//one to many avec exercice 
+
+        exercices         Exercices[]
+        title             String
+        description       String
+        content           String
+        quizzes           String
+     
+        price             Int?
+}
+
+model Exercices {
+       exercice_id         String  @id @default(auto()) @map("_id") @db.ObjectId
+
+//many to many avec apprenant
+        apprenantIDs String[]   @db.ObjectId
+        apprenants  Apprenants[] @relation(fields: [apprenantIDs], references: [apprenant_id])
+
+
+        cours             Cours  @relation(fields: [course_id], references: [course_id])
+        course_id             String   @db.ObjectId 
+        title               String
+        description         String
+        due_date            String
+        submission          String
+
+}
+model Certification {
+
+        certification_id      String  @id @default(auto()) @map("_id") @db.ObjectId
+
+//many to many avec apprenant
+        apprenantIDs String[]   @db.ObjectId
+        apprenants  Apprenants[] @relation(fields: [apprenantIDs], references: [apprenant_id])
+
+        title                 String
+        description           String
+        date_issued           String
+}
+
+model Users { 
+
+        user_id             String  @id @default(auto()) @map("_id") @db.ObjectId
+        name                String
+        email               String
+        age                 Int
+        password            String
+        role                String
+        facture             Factures[]
+//one to one avec apprenant
+        Apprenant           Apprenants @relation(fields: [ApprenantId], references: [apprenant_id])
+        ApprenantId         String @unique @db.ObjectId 
+}
+
+model Factures {
+        invoice_id          String  @id @default(auto()) @map("_id") @db.ObjectId
+// relation one to many avec users  
+        user                Users   @relation(fields: [userId], references: [user_id])
+        userId              String   @db.ObjectId 
+        amount              String
+        status              String
+        due_date            String
+
+}
+
